@@ -145,5 +145,8 @@ A interface do usuário foi desenvolvida com foco em:
 - Feedback visual para ações
 - Ícones intuitivos
 
+## 📹 Observação Final
 
+Infelizmente, não foi possível editar o vídeo explicativo completo a tempo, mas planejo disponibilizá-lo futuramente para detalhar o funcionamento e as escolhas técnicas do projeto. Obrigado pela compreensão!
 
+<p align="center"> <img src="https://img.icons8.com/emoji/96/crying-face.png" alt="Sad Icon" /> </p>
