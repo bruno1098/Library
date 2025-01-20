@@ -29,8 +29,23 @@ export class BookService {
         return this.bookRepository.save(book);
     }
 
-    async update(id: number, book: Partial<Book>): Promise<Book>{
-        await this.bookRepository.update(id, book);
+    async update(id: number, book: Partial<Book>): Promise<Book> {
+        const existingBook = await this.findOne(id);
+        if (!existingBook) {
+            throw new Error('Livro não encontrado');
+        }
+
+       
+        if (!book.author && existingBook.author) {
+            book.author = existingBook.author;
+        }
+
+        const updatedBook = {
+            ...existingBook,
+            ...book,
+        };
+
+        await this.bookRepository.save(updatedBook);
         return this.findOne(id);
     }
 

@@ -1,6 +1,4 @@
-
-
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, HttpException, HttpStatus } from "@nestjs/common";
 import { Book } from "src/entities/book.entity";
 import { BookService } from "src/services/book.service";
 
@@ -24,9 +22,15 @@ export class BookController{
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() book: Partial<Book>): Promise<Book>{
-
-        return this.bookService.update(+id, book);
+    async update(@Param('id') id: string, @Body() book: Partial<Book>): Promise<Book> {
+        try {
+            return await this.bookService.update(+id, book);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao atualizar livro',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @Delete(':id')
