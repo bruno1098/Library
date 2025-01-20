@@ -11,7 +11,6 @@ import { BookModule } from "./book.module";
         BookModule,
     ]
 
-
 })
 
 export class AuthorModule {}
