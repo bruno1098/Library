@@ -18,7 +18,6 @@ import { Book } from './entities/book.entity';
     AuthorModule,
     BookModule,
     ChatGateway,
-    RpaService,
   ],
 })
 export class AppModule {}
