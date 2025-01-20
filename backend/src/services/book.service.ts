@@ -49,8 +49,17 @@ export class BookService {
         return this.findOne(id);
     }
 
-    async delete(id: number): Promise<void>{
-        await this.bookRepository.delete(id);
+    async delete(id: number): Promise<void> {
+        const book = await this.findOne(id);
+        if (!book) {
+            throw new Error('Livro não encontrado');
+        }
+
+        try {
+            await this.bookRepository.delete(id);
+        } catch (error) {
+            throw new Error(`Erro ao excluir livro: ${error.message}`);
+        }
     }
 
 }

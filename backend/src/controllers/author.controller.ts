@@ -43,7 +43,14 @@ export class AuthorController{
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string): Promise<void>{
-        return this.authorService.delete(+id);
+    async delete(@Param('id') id: string): Promise<void> {
+        try {
+            return await this.authorService.delete(+id);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao excluir autor',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

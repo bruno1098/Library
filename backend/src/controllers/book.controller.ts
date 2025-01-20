@@ -34,7 +34,14 @@ export class BookController{
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string): Promise<void>{
-        return this.bookService.delete(+id);
+    async delete(@Param('id') id: string): Promise<void> {
+        try {
+            return await this.bookService.delete(+id);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao excluir livro',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

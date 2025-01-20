@@ -61,7 +61,20 @@ export class AuthorService {
         return this.findOne(id);
     }
 
-    async delete(id: number): Promise<void>{
+    async delete(id: number): Promise<void> {
+        const author = await this.findOne(id);
+        if (!author) {
+            throw new Error('Autor não encontrado');
+        }
+
+        // Primeiro, exclui todos os livros do autor
+        if (author.books) {
+            for (const book of author.books) {
+                await this.bookService.delete(book.id);
+            }
+        }
+
+        // Depois, exclui o autor
         await this.authorRepository.delete(id);
     }
 
