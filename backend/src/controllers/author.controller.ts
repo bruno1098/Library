@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, HttpException, HttpStatus } from "@nestjs/common";
 import { Author } from "src/entities/author.entity";
 import { Book } from "src/entities/book.entity";
 import { AuthorService } from "src/services/author.service";
@@ -31,8 +31,15 @@ export class AuthorController{
     }
     
     @Put(':id')
-    update(@Param(':id') id: string, @Body() author: Partial<Author>): Promise<Author>{
-        return this.authorService.update(+id, author);
+    async update(@Param('id') id: string, @Body() author: Partial<Author>): Promise<Author> {
+        try {
+            return await this.authorService.update(+id, author);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao atualizar autor',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @Delete(':id')

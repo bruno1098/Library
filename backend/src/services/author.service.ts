@@ -1,4 +1,3 @@
-
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -33,19 +32,33 @@ export class AuthorService {
         return this.authorRepository.save(author);
     }
 
-    async update(id: number, author: Partial<Author>): Promise<Author>{
-        await this.authorRepository.update(id, author);
-        const updatedAuthor = await this.findOne(id);
+    async update(id: number, author: Partial<Author>): Promise<Author> {
+        const existingAuthor = await this.findOne(id);
+        if (!existingAuthor) {
+            throw new Error('Autor não encontrado');
+        }
 
-        if (author.books){
+       
+        if (!author.books) {
+            author.books = existingAuthor.books;
+        }
 
-            for (const book of author.books){
+      
+        const updatedAuthor = {
+            ...existingAuthor,
+            ...author,
+        };
+
+        await this.authorRepository.save(updatedAuthor);
+
+       
+        if (author.books) {
+            for (const book of author.books) {
                 await this.bookService.update(book.id, book);
             }
         }
 
-        return updatedAuthor;
-
+        return this.findOne(id);
     }
 
     async delete(id: number): Promise<void>{
