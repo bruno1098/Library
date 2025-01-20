@@ -26,8 +26,15 @@ export class AuthorController{
     }
 
     @Post()
-    create(@Body() author: Partial<Author>): Promise<Author>{
-        return this.authorService.create(author);
+    async create(@Body() author: Partial<Author>): Promise<Author> {
+        try {
+            return await this.authorService.create(author);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao criar autor',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
     
     @Put(':id')

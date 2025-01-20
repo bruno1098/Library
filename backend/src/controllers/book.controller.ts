@@ -17,8 +17,15 @@ export class BookController{
     }
 
     @Post()
-    create(@Body() book: Partial<Book>): Promise<Book>{
-        return this.bookService.create(book);
+    async create(@Body() book: Partial<Book>): Promise<Book> {
+        try {
+            return await this.bookService.create(book);
+        } catch (error) {
+            throw new HttpException(
+                error.message || 'Erro ao criar livro',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @Put(':id')

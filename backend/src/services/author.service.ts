@@ -28,8 +28,35 @@ export class AuthorService {
 
     }
 
-    create(author: Partial<Author>): Promise<Author>{
-        return this.authorRepository.save(author);
+    async create(author: Partial<Author>): Promise<Author> {
+        try {
+           
+            if (author.books && author.books.length > 0) {
+                const validatedBooks = [];
+                for (const book of author.books) {
+                    if (book.id) {
+                        const existingBook = await this.bookService.findOne(book.id);
+                        if (!existingBook) {
+                            throw new Error(`Livro com ID ${book.id} não encontrado`);
+                        }
+                        validatedBooks.push(existingBook);
+                    } else {
+                       
+                        validatedBooks.push(book);
+                    }
+                }
+                author.books = validatedBooks;
+            }
+
+           
+            const newAuthor = this.authorRepository.create(author);
+            await this.authorRepository.save(newAuthor);
+            
+            
+            return this.findOne(newAuthor.id);
+        } catch (error) {
+            throw new Error(`Erro ao criar autor: ${error.message}`);
+        }
     }
 
     async update(id: number, author: Partial<Author>): Promise<Author> {

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {Book} from '../entities/book.entity';
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Author } from '../entities/author.entity';
 
 
 @Injectable()
@@ -10,6 +11,8 @@ export class BookService {
     constructor(
         @InjectRepository(Book)
         private bookRepository: Repository<Book>,
+        @InjectRepository(Author)
+        private authorRepository: Repository<Author>
     ){}
 
     findAll(): Promise<Book[]>{
@@ -25,8 +28,27 @@ export class BookService {
         });
     }
 
-    create(book: Partial<Book>): Promise<Book>{
-        return this.bookRepository.save(book);
+    async create(book: Partial<Book>): Promise<Book> {
+        try {
+            if (book.author && book.author.id) {
+                const author = await this.authorRepository.findOne({
+                    where: { id: book.author.id }
+                });
+                
+                if (!author) {
+                    throw new Error('Autor não encontrado');
+                }
+                
+                book.author = author;
+            }
+        
+            const newBook = this.bookRepository.create(book);
+            const savedBook = await this.bookRepository.save(newBook);
+           
+            return this.findOne(savedBook.id);
+        } catch (error) {
+            throw new Error(`Erro ao criar livro: ${error.message}`);
+        }
     }
 
     async update(id: number, book: Partial<Book>): Promise<Book> {
